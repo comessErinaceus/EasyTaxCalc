@@ -6,6 +6,10 @@ import json;
 DEFAULT_FEDERAL_BACKUP_PATH = 'backups/federal_backup.json'
 DEFAULT_STATE_BACKUP_PATH = 'backups/state_backup.json'
 
+# Federal and State working copy file locations
+DEFAULT_FEDERAL_BRACKETS = 'tax_brackets.json'
+DEFAULT_STATE_BRACKETS = 'state_taxes_backup.json'
+
 #Load tax brackets
 def load_tax_brackets(filename):
     with open(filename, 'r') as file:
@@ -118,6 +122,30 @@ def prompt_user_for_brackets():
             
 
     return brackets
+
+# Restore Backup functionality
+def restore_backup(backup_type):
+    if backup_type == "Federal":
+        backup_path = DEFAULT_FEDERAL_BACKUP_PATH
+
+    elif backup_type == "State":
+        backup_path = DEFAULT_STATE_BACKUP_PATH
+    else:
+        raise ValueError(f"Unknown backup type: {backup_type}")
+    
+
+    try:
+        tax_brackets = load_tax_brackets(backup_path)
+        
+        if(backup_type == "Federal"):
+            save_tax_brackets(DEFAULT_FEDERAL_BRACKETS, tax_brackets)
+        elif(backup_type == "State"):
+            save_tax_brackets(DEFAULT_STATE_BRACKETS, tax_brackets)
+        print(f"{backup_type} tax brackets restored successfully from {backup_path}")
+    except Exception as e:
+        print(f"Error restoring {backup_type} tax brackets: {e}")
+
+
 
 
 # Handle CLI args
