@@ -1,6 +1,11 @@
 import argparse;
 import json;
 
+
+# Federal and State backup file locations
+DEFAULT_FEDERAL_BACKUP_PATH = 'backups/federal_backup.json'
+DEFAULT_STATE_BACKUP_PATH = 'backups/state_backup.json'
+
 #Load tax brackets
 def load_tax_brackets(filename):
     with open(filename, 'r') as file:
@@ -135,6 +140,11 @@ def main():
     update_parser = subparsers.add_parser('update-input', help='Update tax brackets for a state manually.')
     update_parser.add_argument('-s', '--state', type=str, required=True, help='The state to update')
     update_parser.add_argument('--manual', action='store_true',  help='Input the lower, upper bounds, and rates manually.')
+
+     # Subparser for restoring backups
+    restore_parser = subparsers.add_parser('restore-backup', help='Restore tax brackets from backup.')
+    restore_parser.add_argument('-F', '--federal_tax_bracket_restore', action='store_true', help="Restore the working copy of Federal tax brackets to the 2024 default.")
+    restore_parser.add_argument('-S', '--state_tax_bracket_restore', action='store_true', help="Restore the working copy of State tax brackets to the 2024 default.")
     
 
     args = parser.parse_args()
@@ -165,6 +175,13 @@ def main():
         else:
             print("Please use the (-m) --manual flag to input tax brackets manually.")
 
+    elif args.command == 'restore-backup':
+        if args.federal_tax_bracket_restore:
+            print("Restoring federal backup")
+            #restore_backup("Federal")
+        if args.state_tax_bracket_restore:
+            #restore_backup("State")
+            print("Restoring State backup")
 
 if __name__ == '__main__':
     main()
