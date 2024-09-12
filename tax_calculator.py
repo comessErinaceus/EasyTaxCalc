@@ -1,5 +1,5 @@
-import argparse;
-import json;
+import argparse
+import json
 
 
 # Federal and State backup file locations
@@ -7,8 +7,8 @@ DEFAULT_FEDERAL_BACKUP_PATH = 'backups/federal_backup.json'
 DEFAULT_STATE_BACKUP_PATH = 'backups/state_backup.json'
 
 # Federal and State working copy file locations
-DEFAULT_FEDERAL_BRACKETS = 'tax_brackets.json'
-DEFAULT_STATE_BRACKETS = 'state_taxes_backup.json'
+DEFAULT_FEDERAL_BRACKETS = 'federal_tax_brackets.json'
+DEFAULT_STATE_BRACKETS = 'state_taxes.json'
 
 #Load tax brackets
 def load_tax_brackets(filename):
@@ -20,15 +20,15 @@ def save_tax_brackets(filename, tax_brackets):
         json.dump(tax_brackets, file, indent=2)
     
 #Path to tax brackets file
-tax_brackets_file = 'tax_brackets.json'
+tax_brackets_file = DEFAULT_FEDERAL_BRACKETS
 tax_brackets = load_tax_brackets(tax_brackets_file)
 
-def calculate_tax(income, filing_status):
+def calculate_tax(income, filing_status, tax_brackets):
     brackets = tax_brackets.get(filing_status)
     if not brackets:
         raise ValueError("Invalid filing status")
     tax = 0
-    previous_bracket_max = 0
+    #previous_bracket_max = 0
 
     for bracket in brackets:
         lower = float(bracket['lower'])
@@ -46,7 +46,7 @@ def calculate_tax(income, filing_status):
 
 # Update the tax brackets for the state from json file
 def update_tax_brackets_from_file(state, file_path):
-    tax_brackets = load_tax_brackets('state_taxes_backup.json')
+    tax_brackets = load_tax_brackets(DEFAULT_STATE_BACKUP_PATH )
 
     if state not in tax_brackets:
         print(f"State '{state}' not found in the tax data.")
@@ -59,7 +59,7 @@ def update_tax_brackets_from_file(state, file_path):
         #print('...\n\n')
         tax_brackets[state] = new_brackets
         #print("All Data:{",tax_brackets)
-        save_tax_brackets('state_taxes_backup.json', tax_brackets)
+        save_tax_brackets(DEFAULT_STATE_BACKUP_PATH , tax_brackets)
     except FileNotFoundError:
         print(f"File '{file_path}' not found.")
     except json.JSONDecodeError as e:
@@ -68,25 +68,25 @@ def update_tax_brackets_from_file(state, file_path):
 
 # Update the tax brackets for the state from manual inputs
 def update_tax_brackets(state, brackets):
-    
-    #get original brackets
-    tax_brackets = load_tax_brackets('state_taxes_backup.json')
+    if brackets:
+        #get original brackets
+        tax_brackets = load_tax_brackets(DEFAULT_STATE_BACKUP_PATH )
 
-    #if we have the brackets modification is possible
-    if state not in tax_brackets:
-        print(f"State '{state}' not found in the tax data.")
-    
+        #if we have the brackets modification is possible
+        if state not in tax_brackets:
+            print(f"State '{state}' not found in the tax data.")
+        
 
-    # input list should be a list of bracket dictionaries
-    new_brackets = [
-        {"lower": brackets[i], "upper":brackets[i + 1], "rate": brackets[i + 2]}
-        for i in range(0, len(brackets), 3)
-    ]
+        # input list should be a list of bracket dictionaries
+        new_brackets = [
+            {"lower": brackets[i], "upper":brackets[i + 1], "rate": brackets[i + 2]}
+            for i in range(0, len(brackets), 3)
+        ]
 
-    #print("New brackets: ", new_brackets)
-    tax_brackets[state] = new_brackets
-    save_tax_brackets('state_taxes_backup.json', tax_brackets)
-    print(f"Tax brackets for '{state}' updated successfully.")
+        #print("New brackets: ", new_brackets)
+        tax_brackets[state] = new_brackets
+        save_tax_brackets('state_taxes_backup.json', tax_brackets)
+        print(f"Tax brackets for '{state}' updated successfully.")
 
 
 # Prompt user for brackets interactively
@@ -182,11 +182,11 @@ def main():
 ## Tool logic
 
     if args.command == 'calculate':
-        #tax_brackets = load_tax_brackets()
+       
 
         try:
             #calculate_tax pulls in the tax brackets data in the function, why pass that data to the funct?
-            tax = calculate_tax(float(args.income), args.filing_status)
+            tax = calculate_tax(float(args.income), args.filing_status, tax_brackets)
             print(f'The calculated tax for an income of ${args.income} as {args.filing_status} is ${tax:.2f}')
         except ValueError as e:
             print(e)
@@ -206,9 +206,9 @@ def main():
     elif args.command == 'restore-backup':
         if args.federal_tax_bracket_restore:
             print("Restoring federal backup")
-            #restore_backup("Federal")
+            restore_backup("Federal")
         if args.state_tax_bracket_restore:
-            #restore_backup("State")
+            restore_backup("State")
             print("Restoring State backup")
 
 if __name__ == '__main__':
