@@ -1,5 +1,17 @@
 Using the tool
 
+calculate:
+    python tax_calculator.py calculate -i 50000 -fS Single
+
+
+update-file:
+    python tax_calculator.py update -s Alabama -b "[{\"lower\": 0, \"upper\": 12000, \"rate\": 0.015}, {\"lower\": 12000, \"upper\": 25000, \"rate\": 0.025}, {\"lower\": 25000, \"upper\": 50000, \"rate\": 0.035}, {\"lower\": 50000, \"upper\": 1.7976931348623157e+308, \"rate\": 0.045}]"
+
+update-input
+
+
+
+
 create_state_files.ps1
     Description: This file creates the StateTaxes directory and files with an empty json file for each StateTaxes
 

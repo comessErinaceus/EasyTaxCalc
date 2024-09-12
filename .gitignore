@@ -16,3 +16,6 @@ state_taxes_backup_2024.json
 
 #Ignore TODO file
 TODO.txt
+
+#Ignore the test file
+testfile.json
