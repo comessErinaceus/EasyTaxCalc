@@ -13,3 +13,6 @@ state_taxes_backup_2024.json
 # Ignore files that should not be in version control
 *.log
 *.tmp
+
+#Ignore TODO file
+TODO.txt
