@@ -1,0 +1,15 @@
+# Python cache files, should be ignored
+__pycache__/
+
+# PowerShell script that generates each state tax file
+create_state_files.ps1
+
+# State tax data folder is generated
+StateTaxes/
+
+# Backup files should be ignored
+state_taxes_backup_2024.json
+
+# Ignore files that should not be in version control
+*.log
+*.tmp
