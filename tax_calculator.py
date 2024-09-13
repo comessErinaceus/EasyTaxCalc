@@ -44,6 +44,30 @@ def calculate_tax(income, filing_status, tax_brackets):
 
     return tax
 
+def calculate_state_tax(income, filing_status, state):
+    state_brackets = load_tax_brackets(DEFAULT_STATE_BRACKETS)
+
+            #if we have the brackets modification is possible
+    if state not in state_brackets:
+        print(f"State '{state}' not found in the tax data.")
+
+    brackets = state_brackets[state].get(filing_status)
+
+    for bracket in brackets:
+        lower = float(bracket['lower'])
+        upper = float(bracket['upper'])
+        rate = float(bracket['rate'])
+        #print(lower, ' ', upper, ' ', rate)
+        if income > lower:
+            taxable_income = min(income, upper) - lower
+            tax += taxable_income * rate
+            #print("TAX:", tax)
+        else:
+            break
+
+    return tax
+        
+
 # Update the tax brackets for the state from json file
 def update_tax_brackets_from_file(state, file_path):
     tax_brackets = load_tax_brackets(DEFAULT_STATE_BACKUP_PATH )
@@ -85,7 +109,7 @@ def update_tax_brackets(state, brackets):
 
         #print("New brackets: ", new_brackets)
         tax_brackets[state] = new_brackets
-        save_tax_brackets('state_taxes_backup.json', tax_brackets)
+        save_tax_brackets(DEFAULT_STATE_BRACKETS, tax_brackets)
         print(f"Tax brackets for '{state}' updated successfully.")
 
 
@@ -188,6 +212,8 @@ def main():
             #calculate_tax pulls in the tax brackets data in the function, why pass that data to the funct?
             tax = calculate_tax(float(args.income), args.filing_status, tax_brackets)
             print(f'The calculated tax for an income of ${args.income} as {args.filing_status} is ${tax:.2f}')
+
+            state_tax = calculate_state_tax()
         except ValueError as e:
             print(e)
     elif args.command == 'update-file':
