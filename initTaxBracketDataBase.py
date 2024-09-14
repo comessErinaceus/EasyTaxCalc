@@ -32,7 +32,7 @@ def create_states_table():
 def create_file_status_table():
     conn = sqlite3.connect(TAX_BRACKET_DATABASE)
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS file_status (id INTEGER AUTO INCREMENT, status TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS file_status (id INTEGER PRIMARY KEY AUTOINCREMENT, status TEXT)''')
 
     conn.commit()
     conn.close()
@@ -44,7 +44,7 @@ def populate_file_status():
     file_statuses = ['single', 'married_separate', 'married_joint', 'head_of_household']
     
     for a in file_statuses:
-        c.execute('INSERT INTO file_status(status) VALUES (?)', (a,))
+        c.execute("INSERT INTO file_status(status) VALUES (?)", (a,))
 
     conn.commit()
     conn.close()
@@ -100,9 +100,9 @@ def get_status_id(status_name):
     conn = sqlite3.connect(TAX_BRACKET_DATABASE)
     cursor = conn.cursor()
 
-    cursor.execute('SELECT id FROM file_status WHERE status = (?)', (status_name,))
+    cursor.execute('SELECT id FROM file_status WHERE status =?', (status_name,))
     result = cursor.fetchone()
-    print("Result: ", result)
+    # print("Result: ", result)
     conn.commit()
     conn.close()
     if result:
@@ -134,12 +134,7 @@ def populate_tax_brackets_table(json_data, status):
     conn.commit()
     conn.close()
 
-
-
-# populate the db with federal tax rates
-
-
-def main():
+def init_database():
     print("Creating Database\n")
     if create_database():
 
@@ -152,6 +147,13 @@ def main():
         print("populating Data")
         
         populate_tax_brackets_table('state_taxes.json', 'single')
+
+
+# populate the db with federal tax rates
+
+
+def main():
+    init_database()
 
 
 if __name__ == '__main__':
