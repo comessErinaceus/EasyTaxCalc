@@ -8,6 +8,8 @@ This tool has multiple flaws including:
 
 It should not be used as a comprehensive tool for determining taxation, only ballpark estimates.
 
+----------------------
+
 Using the tool
 
 calculate:

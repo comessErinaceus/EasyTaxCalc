@@ -2,6 +2,10 @@ import argparse
 import json
 
 
+
+
+CONSOLE_APP_NAME = "Quick Tax Calc"
+
 # Federal and State backup file locations
 DEFAULT_FEDERAL_BACKUP_PATH = 'backups/federal_backup.json'
 DEFAULT_STATE_BACKUP_PATH = 'backups/state_backup.json'
