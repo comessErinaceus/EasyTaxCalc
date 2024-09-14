@@ -19,3 +19,6 @@ TODO.txt
 
 #Ignore the test file
 testfile.json
+
+#Don't track .db files
+*.db
