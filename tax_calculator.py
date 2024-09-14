@@ -51,7 +51,8 @@ def calculate_state_tax(income, filing_status, state):
     if state not in state_brackets:
         print(f"State '{state}' not found in the tax data.")
 
-    brackets = state_brackets[state].get(filing_status)
+    brackets = state_brackets.get(state)
+    tax=0
 
     for bracket in brackets:
         lower = float(bracket['lower'])
@@ -182,6 +183,8 @@ def main():
 
     calc_parser.add_argument('-i', '--income', type=float, help='Annual income')
     calc_parser.add_argument('-fS', '--filing_status', choices=['single', 'married_joint'], help='File status')
+    calc_parser.add_argument('-s', '--state', help='State of Residence')
+
 
     #Subparser for updating the tax brackets
     update_parser = subparsers.add_parser('update-file', help='Update tax brackets for a state.')
@@ -213,7 +216,8 @@ def main():
             tax = calculate_tax(float(args.income), args.filing_status, tax_brackets)
             print(f'The calculated tax for an income of ${args.income} as {args.filing_status} is ${tax:.2f}')
 
-            state_tax = calculate_state_tax()
+            state_tax = calculate_state_tax(args.income, args.filing_status, args.state)
+            print(f'The calculated tax for an income of ${args.income} as {args.filing_status} is ${state_tax:.2f}')
         except ValueError as e:
             print(e)
     elif args.command == 'update-file':
