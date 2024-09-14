@@ -1,6 +1,8 @@
 import argparse
 import json
 
+import initTaxBracketDataBase as indb
+
 
 
 
@@ -51,6 +53,9 @@ def calculate_tax(income, filing_status, tax_brackets):
 def calculate_state_tax(income, filing_status, state):
     state_brackets = load_tax_brackets(DEFAULT_STATE_BRACKETS)
 
+    state_db_brackets = indb.get_brackets(state, filing_status)
+    #print("Brackets: ", state_db_brackets)
+
             #if we have the brackets modification is possible
     if state not in state_brackets:
         print(f"State '{state}' not found in the tax data.")
@@ -60,11 +65,14 @@ def calculate_state_tax(income, filing_status, state):
     brackets = state_brackets.get(state)
     tax=0
 
-    for bracket in brackets:
-        lower = float(bracket['lower'])
-        upper = float(bracket['upper'])
-        rate = float(bracket['rate'])
-        #print(lower, ' ', upper, ' ', rate)
+    for bracket in state_db_brackets:
+        #print("Bracket: ")
+        lower = float(bracket[1])
+        upper = float(bracket[2])
+        rate = float(bracket[3])
+
+        # print(lower, " ", upper, " ", rate)
+
         if income > lower:
             taxable_income = min(income, upper) - lower
             tax += taxable_income * rate
@@ -73,6 +81,21 @@ def calculate_state_tax(income, filing_status, state):
             break
 
     return tax
+
+
+    # for bracket in brackets:
+    #     lower = float(bracket['lower'])
+    #     upper = float(bracket['upper'])
+    #     rate = float(bracket['rate'])
+    #     #print(lower, ' ', upper, ' ', rate)
+    #     if income > lower:
+    #         taxable_income = min(income, upper) - lower
+    #         tax += taxable_income * rate
+    #         #print("TAX:", tax)
+    #     else:
+    #         break
+
+    # return tax
         
 
 # Update the tax brackets for the state from json file
@@ -186,7 +209,6 @@ def main():
 
     # Subparser for tax calculation
     calc_parser = subparsers.add_parser('calculate', help='Calculate tax based on income and filing status.')
-
     calc_parser.add_argument('-i', '--income', type=float, help='Annual income')
     calc_parser.add_argument('-fS', '--filing_status', choices=['single', 'married_joint'], help='File status')
     calc_parser.add_argument('-s', '--state', help='State of Residence')
@@ -206,7 +228,9 @@ def main():
     restore_parser = subparsers.add_parser('restore-backup', help='Restore tax brackets from backup.')
     restore_parser.add_argument('-F', '--federal_tax_bracket_restore', action='store_true', help="Restore the working copy of Federal tax brackets to the 2024 default.")
     restore_parser.add_argument('-S', '--state_tax_bracket_restore', action='store_true', help="Restore the working copy of State tax brackets to the 2024 default.")
-    
+
+    # Database init
+    init_db_parser = subparsers.add_parser('init_db', help='initialize the database with default data')
 
     args = parser.parse_args()
 
@@ -220,10 +244,11 @@ def main():
         try:
             #calculate_tax pulls in the tax brackets data in the function, why pass that data to the funct?
             tax = calculate_tax(float(args.income), args.filing_status, tax_brackets)
-            print(f'The calculated tax for an income of ${args.income} as {args.filing_status} is ${tax:.2f}')
+            print(f"Gross Income: ${args.income} as {args.filing_status} ")
+            print(f'Federal withholding: is ${tax:.2f}')
 
             state_tax = calculate_state_tax(args.income, args.filing_status, args.state)
-            print(f'The calculated tax for an income of ${args.income} as {args.filing_status} is ${state_tax:.2f}')
+            print(f'State withholding: ${state_tax:.2f}')
 
             print(args.state, " - Take Home Pay: ",args.income - tax - state_tax)
         except ValueError as e:
@@ -248,6 +273,10 @@ def main():
         if args.state_tax_bracket_restore:
             restore_backup("State")
             print("Restoring State backup")
+    elif args.command == 'init_db':
+        print("initializing")
+        indb.init_database()
+        print("Complete")
 
 if __name__ == '__main__':
     main()

@@ -148,13 +148,34 @@ def init_database():
         
         populate_tax_brackets_table('state_taxes.json', 'single')
 
+def get_brackets(state, file_status):
+    conn = sqlite3.connect(TAX_BRACKET_DATABASE)
+    cursor = conn.cursor()
+
+    brackets_obj = cursor.execute(''' SELECT file_status.status, 
+                                  tax_brackets.lower, 
+                                  tax_brackets.upper, 
+                                  tax_brackets.rate, 
+                                  states.name FROM file_status 
+                                    JOIN tax_brackets 
+                                        ON file_status.id = tax_brackets.status 
+                                    JOIN states 
+                                        ON tax_brackets.state = states.id 
+                                  Where states.name = (?) AND file_status.status = (?)''', (state, file_status))
+    brackets = brackets_obj.fetchall()
+
+    conn.commit()
+    conn.close()
+
+    return brackets
+
 
 # populate the db with federal tax rates
 
 
-def main():
-    init_database()
+# def main():
+#     init_database()
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
