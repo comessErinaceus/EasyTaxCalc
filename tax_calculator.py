@@ -222,6 +222,8 @@ def main():
 
             state_tax = calculate_state_tax(args.income, args.filing_status, args.state)
             print(f'The calculated tax for an income of ${args.income} as {args.filing_status} is ${state_tax:.2f}')
+
+            print(f"Take Home Pay: ",args.income - tax - state_tax, " state: ", args.state)
         except ValueError as e:
             print(e)
     elif args.command == 'update-file':
