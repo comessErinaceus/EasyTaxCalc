@@ -177,6 +177,20 @@ def prompt_user_for_brackets():
 
     return brackets
 
+def prompt_user_for_paychecks():
+    print("input paychecks:")
+    paychecks = []
+    while True:
+        user_input = input("Input gross paycheck: ")
+        if user_input.lower() == 'done':
+            break
+        try:
+            paycheck_gross = float(user_input)
+            paychecks.append(paycheck_gross)
+        except ValueError:
+            print("Invalid input. Type 'done' to finish or press Enter to retry: ")
+    return paychecks
+
 # Restore Backup functionality
 def restore_backup(backup_type):
     if backup_type == "Federal":
@@ -232,6 +246,9 @@ def main():
     # Database init
     init_db_parser = subparsers.add_parser('init_db', help='initialize the database with default data')
 
+    # Calc from paychecks
+    calc_from_paycheck = subparsers.add_parser('calc_from_paychecks', help='Calculate tax based on user inputs.')
+
     args = parser.parse_args()
 
 
@@ -277,6 +294,11 @@ def main():
         print("initializing")
         indb.init_database()
         print("Complete")
+    elif args.command == 'calc_from_paychecks':
+        print("Calculating from user input")
+        paychecks = prompt_user_for_paychecks()
+        print(paychecks)
+
 
 if __name__ == '__main__':
     main()
