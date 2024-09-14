@@ -54,6 +54,8 @@ def calculate_state_tax(income, filing_status, state):
             #if we have the brackets modification is possible
     if state not in state_brackets:
         print(f"State '{state}' not found in the tax data.")
+        raise ValueError("Invalid State")
+        
 
     brackets = state_brackets.get(state)
     tax=0
@@ -223,7 +225,7 @@ def main():
             state_tax = calculate_state_tax(args.income, args.filing_status, args.state)
             print(f'The calculated tax for an income of ${args.income} as {args.filing_status} is ${state_tax:.2f}')
 
-            print(f"Take Home Pay: ",args.income - tax - state_tax, " state: ", args.state)
+            print(args.state, " - Take Home Pay: ",args.income - tax - state_tax)
         except ValueError as e:
             print(e)
     elif args.command == 'update-file':
