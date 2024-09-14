@@ -1,3 +1,13 @@
+This is a simple coding project to demonstrate proficienciy with python creating a cmdline tool, and using the python 
+unittest library 
+    
+This tool has multiple flaws including:
+        It does not take into account state filing joint, head of household, or filing separate.
+        It should use a sqlitedb to manage tax brackets instead of json files
+        Etc.. cont
+
+It should not be used as a comprehensive tool for determining taxation, only ballpark estimates.
+
 Using the tool
 
 calculate:
